@@ -4,9 +4,12 @@ extern crate rand;
 use ed25519_dalek::Digest;
 use ed25519_dalek::Keypair;
 use ed25519_dalek::PublicKey;
-use rand::rngs::OsRng;
 use sha3::digest::Output;
 use sha3::Sha3_256;
+use std::thread;
+
+use rand::{SeedableRng};
+use rand::rngs::StdRng;
 
 fn address(public_key_bytes: &[u8]) -> Output<Sha3_256> {
     let hasher = &mut Sha3_256::new();
@@ -25,9 +28,8 @@ fn address_pubkey(addr: Output<Sha3_256>, nonce: u8) -> bool {
     PublicKey::from_bytes(&ret).is_ok()
 }
 
-fn main() {
-    println!("Hello, world!");
-    let mut csprng = OsRng {};
+fn calculate() {
+    let mut csprng = StdRng::from_entropy();
     let mut max_nonce = 0u8;
     loop {
         let keypair: Keypair = Keypair::generate(&mut csprng);
@@ -53,4 +55,19 @@ fn main() {
             break;
         }
     }
+}
+
+fn main() {
+    let mut handles = vec![];
+     for i in 0..4 {
+        println!("thread:{}", i);
+        let handle = thread::spawn(||{
+            calculate();
+         });
+         handles.push(handle);
+     }
+
+     for handle in handles {
+        handle.join().unwrap();
+     }
 }
