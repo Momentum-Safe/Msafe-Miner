@@ -3,7 +3,6 @@ extern crate rand;
 
 use ed25519_dalek::Digest;
 use ed25519_dalek::Keypair;
-use ed25519_dalek::SecretKey;
 use ed25519_dalek::PublicKey;
 use sha3::digest::Output;
 use sha3::Sha3_256;
@@ -36,10 +35,6 @@ fn address_pubkey(addr: Output<Sha3_256>, nonce: u32) -> bool {
 fn calculate2() {
     let mut csprng = StdRng::from_entropy();
     let mut max_max_gap = 0u32;
-    //let bytes = hex!("fad2b32339a0fd4b7b49762913ebc372edb3c0e1837767c6ca23314b1b927059");
-    //let sk: SecretKey = SecretKey::from_bytes(bytes.as_slice()).unwrap();
-    //let pk: PublicKey = (&sk).into();
-    //let keypair: Keypair = Keypair { secret: (sk), public: (pk) };
     loop {
         let keypair: Keypair = Keypair::generate(&mut csprng);
         let public_key_bytes: &[u8] = keypair.public.as_bytes();
